@@ -50,7 +50,7 @@ func appendArgs(dst, src []interface{}) []interface{} {
 }
 
 
-func(c redisCmnder) BFReserve(key string,  errorRate float64, capacity int64) *redis.StatusCmd {
+func(c *redisCmnder) BFReserve(key string,  errorRate float64, capacity int64) *redis.StatusCmd {
 	cmd := redis.NewStatusCmd(
 		"bf.reserve",
 		key,
