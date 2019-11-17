@@ -4,9 +4,20 @@ import (
 	redis "github.com/go-redis/redis/v7"
 )
 
+
+
+func ExtendClient(client *redis.Client) *Client {
+	return &Client {
+		client,
+		&redisCmnder{Process:client.Process},
+	}
+}
+
+
+
 type Client struct {
 	*redis.Client
-	*cmdable
+	*redisCmnder
 }
 
 type RbCmdable interface {
@@ -19,10 +30,10 @@ type RbCmdable interface {
 	//TODO: BF.SCANDUMP {key} {iter}
 	//TODO: BF.LOADCHUNK {key} {iter} {data}
 }
-
-type cmdable struct {
+type redisCmnder struct {
 	Process func(cmd redis.Cmder) error
 }
+
 
 func appendArgs(dst, src []interface{}) []interface{} {
 	if len(src) == 1 {
@@ -39,45 +50,45 @@ func appendArgs(dst, src []interface{}) []interface{} {
 }
 
 
-func(c cmdable) BFReserve(key string,  errorRate float64, capacity int64) *redis.StatusCmd {
+func(c redisCmnder) BFReserve(key string,  errorRate float64, capacity int64) *redis.StatusCmd {
 	cmd := redis.NewStatusCmd(
 		"bf.reserve",
 		key,
 		errorRate,
 		capacity,
 	)
-	_ = c(cmd)
+	_ = c.Process(cmd)
 	return cmd
 
 }
 
-func(c cmdable) BFAdd(key string, item interface{}) *redis.IntCmd {
+func(c redisCmnder) BFAdd(key string, item interface{}) *redis.IntCmd {
 	cmd := redis.NewIntCmd("bf.add", key, item)
-	_ = c(cmd)
+	_ = c.Process(cmd)
 	return cmd
 }
 
-func(c cmdable) BFMadd(key string, items ...interface{}) *redis.IntSliceCmd {
+func(c redisCmnder) BFMadd(key string, items ...interface{}) *redis.IntSliceCmd {
 	args := make([]interface{}, 2, 2+len(items))
 	args[0] = "bf.add"
 	args[1] = key
 	args = appendArgs(args, items)
 	cmd := redis.NewIntSliceCmd(args...)
-	_ = c(cmd)
+	_ = c.Process(cmd)
 	return cmd
 }
 
-func(c cmdable) BFExists(key string, item interface{}) *redis.IntCmd {
+func(c redisCmnder) BFExists(key string, item interface{}) *redis.IntCmd {
 	cmd := redis.NewIntCmd("bf.exists", key, item)
-	_ = c(cmd)
+	_ = c.Process(cmd)
 	return cmd
 }
-func(c cmdable) BFMexists(key string, items ...interface{}) *redis.IntSliceCmd {
+func(c redisCmnder) BFMexists(key string, items ...interface{}) *redis.IntSliceCmd {
 	args := make([]interface{}, 2, 2+len(items))
 	args[0] = "bf.exists"
 	args[1] = key
 	args = appendArgs(args, items)
 	cmd := redis.NewIntSliceCmd(args...)
-	_ = c(cmd)
+	_ = c.Process(cmd)
 	return cmd
 }
