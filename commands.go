@@ -20,7 +20,9 @@ type RbCmdable interface {
 	//TODO: BF.LOADCHUNK {key} {iter} {data}
 }
 
-type cmdable func(cmd redis.Cmder) error
+type cmdable struct {
+	Process func(cmd redis.Cmder) error
+}
 
 func appendArgs(dst, src []interface{}) []interface{} {
 	if len(src) == 1 {
