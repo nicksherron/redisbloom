@@ -1,9 +1,5 @@
-module github.com/nsherron90/redisbloom
+module github.com/nicksherron/redisbloom
 
-require (
-	github.com/go-redis/redis v6.15.6+incompatible
-	github.com/onsi/ginkgo v1.8.0 // indirect
-	github.com/onsi/gomega v1.5.0 // indirect
-)
+require github.com/go-redis/redis/v7 v7.0.0-beta.4
 
 go 1.13
