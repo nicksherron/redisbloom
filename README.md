@@ -1,4 +1,7 @@
-
+# Go Redis Bloom
 
 #### TODO:
--[ ] make readme lol
+-[ ] finish readme
+-[ ] add tests
+-[ ] add examples
+-[ ] add license  
